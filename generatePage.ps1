@@ -36,5 +36,8 @@ Write-Host "Preparing HTML files on '$outputPath'"
 
 $reportHtml = $htmlTemplate.Replace("[ACCESSTOKEN]","$accessToken").Replace("[REPORTID]",$reportId).Replace("[WORKSPACEID]",$workspaceId)
 
-$reportHtml | Out-File "$outputPath\$reportId.html"
+$outputFilePath = "$outputPath\$reportId.html"
 
+$reportHtml | Out-File $outputFilePath
+
+Write-Host "HTML file ready: '$outputFilePath'"
