@@ -5,9 +5,19 @@ param(
     ,
     [string]$embedHtmlFilePath = ".\embedPageTemplate.html"
     ,
-    [string]$workspaceId = "cdee92d2-3ff9-43e2-9f71-0916e888ad27"
-    ,
-    [string]$reportId = "d471e78e-2251-4085-9a60-678c0d4b5dfa"
+    $reports = @(
+        @{
+            "workspaceId" = "cdee92d2-3ff9-43e2-9f71-0916e888ad27"
+            ;
+            "reportId" = "d471e78e-2251-4085-9a60-678c0d4b5dfa"
+        }
+        ,
+        @{
+            "workspaceId" = "9f19cb45-1182-4656-82b0-e7a049985835"
+            ;
+            "reportId" = "83b4e4ab-5f17-430c-a0f1-8f791cb14fad"
+        }
+    )
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,10 +44,16 @@ $accessToken = $accessToken.Replace("Bearer ","").Trim()
 
 Write-Host "Preparing HTML files on '$outputPath'"
 
-$reportHtml = $htmlTemplate.Replace("[ACCESSTOKEN]","$accessToken").Replace("[REPORTID]",$reportId).Replace("[WORKSPACEID]",$workspaceId)
+foreach($report in $reports)
+{
+    $workspaceId = $report.workspaceId
+    $reportId = $report.reportId
 
-$outputFilePath = "$outputPath\$reportId.html"
+    $reportHtml = $htmlTemplate.Replace("[ACCESSTOKEN]","$accessToken").Replace("[REPORTID]",$reportId).Replace("[WORKSPACEID]",$workspaceId)
 
-$reportHtml | Out-File $outputFilePath
+    $outputFilePath = "$outputPath\$reportId.html"
 
-Write-Host "HTML file ready: '$outputFilePath'"
+    $reportHtml | Out-File $outputFilePath
+
+    Write-Host "HTML file ready: '$outputFilePath'"
+}
