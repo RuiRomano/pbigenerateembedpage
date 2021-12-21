@@ -30,8 +30,7 @@
 
 <body>
 
-    <div class="alert alert-primary" role="alert" id="loadTimeSeconds">
-    </div>    
+    <div class="alert alert-primary" role="alert" id="loadTimeSeconds"></div>
 
     <div id="embedContainer" style="height: 800px; width: 100%; "></div>
 
@@ -45,11 +44,12 @@
     var WORKSPACE_ID = "[WORKSPACEID]";
     var EMBED_URL = "https://app.powerbi.com/reportEmbed?reportId=" + REPORT_ID + "&groupId=" + WORKSPACE_ID;
     var TOKEN_TYPE = 0;
+    var FILTERS_SCRAMBLE = 0;
 
     async function main() {
         try {
 
-            self.reportStartTime = new Date();
+            self.startRenderingTime = new Date();
 
             let loadedResolve, reportLoaded = new Promise((res, rej) => { loadedResolve = res; });
             let renderedResolve, reportRendered = new Promise((res, rej) => { renderedResolve = res; });
@@ -124,15 +124,18 @@
 
                 // report.on will add an event handler
                 report.on("rendered", function () {
+
+                    console.log("rendered");
+
                     renderedResolve();
 
                     var div = $('#loadTimeSeconds')
 
-                    var loadTimeSeconds = Math.round((new Date()) - self.reportStartTime) / 1000;
+                    var loadTimeSeconds = Math.round((new Date()) - self.startRenderingTime) / 1000;
 
                     div.html("Time to render: " + loadTimeSeconds + "s");
 
-                    report.off("rendered");
+                    //report.off("rendered");
                 });
             }
 
@@ -143,6 +146,16 @@
             // Insert here the code you want to run after the report is loaded
 
             await reportRendered;
+
+            report.off("pageChanged");
+
+            report.on("pageChanged", function () {
+
+                console.log("pageChanged");
+
+                self.startRenderingTime = new Date();
+
+            });
 
             // IF true look for report level filter with values to loop around
 
