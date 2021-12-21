@@ -5,6 +5,7 @@ param(
     ,
     [string]$embedHtmlFilePath = ".\embedPageTemplate.html"
     ,
+   
     $reports = @(
         @{
             "workspaceId" = "cdee92d2-3ff9-43e2-9f71-0916e888ad27"
